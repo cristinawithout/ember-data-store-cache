@@ -2,8 +2,8 @@
 Provides ability to find all on ember data store with a minimum required cache time.
 
 # Installation
- * ember install:addon ember-data-factory-guy
- * ember install ember-data-factory-guy ( ember cli ^0.2.3 )
+ * ember install:addon ember-data-store-cache
+ * ember install ember-data-store-cache ( ember cli ^0.2.3 )
 
 # Usage
 
