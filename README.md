@@ -1,5 +1,8 @@
 # ember-data-store-cache
-Provides ability to find all on ember data store with a minimum required cache time.
+Provides ability to use a minimum required cache time on Ember Data requests.
+
+Currently works only on findAll type finds. findById
+already uses the data in the store. findQuery isn't supported yet.
 
 # Installation
  * ember install:addon ember-data-store-cache
@@ -8,7 +11,7 @@ Provides ability to find all on ember data store with a minimum required cache t
 # Usage
 
 ## Basic Usage
- * Add file `store.js` to the `app` directory. Extend DS.Store with the
+ * Add file `store.js` to the `app` directory and extend DS.Store with the
 ember-data-store-cache mixin.
 
 ```
@@ -20,17 +23,18 @@ export default DS.Store.extend(CacheMixin, {
 ```
 
  * Where you want to require a mandatory minumum cache time, use `findWithCache`
-instead of `find`. (Currently works only on findAll type finds. findById
-already uses the data in the store. findQuery isn't supported yet.)
+instead of `find`.
 
 ```
+// Find all users. Use what's in the store if find has already been done within
+// minimum cache time.
 model: function() {
     return this.store.findWithCache('user');
 }
 ```
 
 ```
-// Example: Request all from server then filter client-side.
+// Find all users then filter client-side for users with requested company ID.
 beforeModel: function() {
     return this.store.findWithCache('user');
 },
@@ -46,9 +50,8 @@ model: function() {
 ## Customizations
 
 ### Default Cache Minimum
- * Default cache minimum is 10 minutes. To override, set the property 
+ * Default cache minimum is 10 minutes. To override, set the property
 `cacheSeconds` in `store.js`.
-
 
 ```
 import DS from 'ember-data';
@@ -60,7 +63,7 @@ export default DS.Store.extend(CacheMixin, {
 ```
 
 ### Cache Minimum per Request
- * Use specify the cache time per request, pass `cacheTime` parameter to 
+ * To specify the cache time per request, pass `cacheTime` parameter to
 `findWithCache` as the number of seconds to cache.
 
 ```
