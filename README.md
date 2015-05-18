@@ -12,7 +12,6 @@ Provides ability to find all on ember data store with a minimum required cache t
 ember-data-store-cache mixin.
 
 ```
-import Ember from 'ember';
 import DS from 'ember-data';
 import CacheMixin from 'ember-data-store-cache/mixins/ember-data-store-cache';
 
@@ -52,7 +51,6 @@ model: function() {
 
 
 ```
-import Ember from 'ember';
 import DS from 'ember-data';
 import CacheMixin from 'ember-data-store-cache/mixins/ember-data-store-cache';
 
