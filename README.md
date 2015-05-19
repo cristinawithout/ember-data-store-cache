@@ -71,3 +71,13 @@ model: function() {
     return this.store.findWithCache('user', null, null, 300);
 }
 ```
+
+### Clearing cache
+
+There are 2 methods to clearing the cache.
+
+ * clearCache: Remove all entries of typeKey from the store and reset the
+metadata cache time so the next request via findWithCache will make the request
+to the server.
+ * clearCacheTime: Reset the cache time for time to null so the next request via
+findWithCache will make the request to the server.

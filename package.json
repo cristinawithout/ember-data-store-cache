@@ -1,6 +1,6 @@
 {
   "name": "ember-data-store-cache",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Provides ability to use a minimum required cache time on Ember Data requests.",
   "directories": {
     "doc": "doc",
