@@ -89,9 +89,11 @@ export default Ember.Mixin.create({
      */
     findAll: function(typeKey) {
         var type = this.modelFor(typeKey);
-        this.typeMapFor(type).metadata.find_all_requested = this._getTimeNow();
-
-        return this._super.apply(this, arguments);
+        var promise = this._super.apply(this, arguments);
+        promise.then(function() {
+            this.typeMapFor(type).metadata.find_all_requested = this._getTimeNow();
+        }.bind(this));
+        return promise;
     },
 
     /**
