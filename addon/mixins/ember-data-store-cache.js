@@ -88,12 +88,22 @@ export default Ember.Mixin.create({
      * @param {String} typeKey
      */
     findAll: function(typeKey) {
+        var args = arguments;
         var type = this.modelFor(typeKey);
-        var promise = this._super.apply(this, arguments);
-        promise.then(function() {
-            this.typeMapFor(type).metadata.find_all_requested = this._getTimeNow();
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+            this._super.apply(this, args)
+            .then(function(result) {
+                Ember.run(this, function() {
+                    this.typeMapFor(type).metadata.find_all_requested = this._getTimeNow();
+                    resolve(result);
+                });
+            }.bind(this))
+            .catch(function(result) {
+                Ember.run(this, function() {
+                    reject(result);
+                });
+            });
         }.bind(this));
-        return promise;
     },
 
     /**
