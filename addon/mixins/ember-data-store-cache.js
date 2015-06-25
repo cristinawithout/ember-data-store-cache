@@ -107,6 +107,18 @@ export default Ember.Mixin.create({
     },
 
     /**
+     * Override unloadAll to remove the requested time.
+     *
+     * @method unloadAll
+     * @param {String} typeKey
+     */
+    unloadAll: function(typeKey) {
+        var type = this.modelFor(typeKey);
+        this.typeMapFor(type).metadata.find_all_requested = null;
+        return this._super.apply(this, arguments);
+    },
+
+    /**
      * Return the current timestamp in seconds.
      *
      * @method _getTimeNow
