@@ -81,13 +81,13 @@ export default Ember.Mixin.create({
     },
 
     /**
-     * Override findAll method of store to set the find_all_requested metadata
+     * Override fetchAll method of store to set the find_all_requested metadata
      * for use in determining the last request time in findWithCache
      *
-     * @method findAll
+     * @method fetchAll
      * @param {String} typeKey
      */
-    findAll: function(typeKey) {
+    fetchAll: function(typeKey) {
         var args = arguments;
         var type = this.modelFor(typeKey);
         return new Ember.RSVP.Promise(function(resolve, reject) {
