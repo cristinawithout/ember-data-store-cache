@@ -113,8 +113,10 @@ export default Ember.Mixin.create({
      * @param {String} typeKey
      */
     unloadAll: function(typeKey) {
-        var type = this.modelFor(typeKey);
-        this.typeMapFor(type).metadata.find_all_requested = null;
+        if (!Ember.isNone(typeKey)) {
+            var type = this.modelFor(typeKey);
+            this.typeMapFor(type).metadata.find_all_requested = null;
+        }
         return this._super.apply(this, arguments);
     },
 
