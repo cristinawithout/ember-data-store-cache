@@ -33,15 +33,18 @@ export default Ember.Mixin.create({
 
             // Get last queried time.
             var type = this.modelFor(typeKey);
-            var requestedAt = this.typeMapFor(type).metadata.find_all_requested;
+            var metadata = this.typeMapFor(type).metadata;
+            var requested = metadata.find_all_requested;
+            var requestedAt = metadata.find_all_requested_at;
             var now = this._getTimeNow();
 
             cacheTime = cacheTime || this.get('cacheSeconds');
-            if (requestedAt && now - requestedAt < cacheTime) {
+            if (true !== requested && requestedAt && now - requestedAt < cacheTime) {
                 // If time is within cacheSeconds, get from store.
                 return this.all(typeKey);
             } else {
                 // Else, make request.
+                this.typeMapFor(type).metadata.find_all_requested = true;
                 return this.findAll(typeKey, id);
             }
         }
@@ -77,7 +80,7 @@ export default Ember.Mixin.create({
      */
     clearCacheTime(typeKey) {
         var type = this.modelFor(typeKey);
-        this.typeMapFor(type).metadata.find_all_requested = null;
+        this.typeMapFor(type).metadata.find_all_requested_at = null;
     },
 
     /**
@@ -94,7 +97,8 @@ export default Ember.Mixin.create({
             this._super.apply(this, args)
             .then(function(result) {
                 Ember.run(this, function() {
-                    this.typeMapFor(type).metadata.find_all_requested = this._getTimeNow();
+                    this.typeMapFor(type).metadata.find_all_requested = false;
+                    this.typeMapFor(type).metadata.find_all_requested_at = this._getTimeNow();
                     resolve(result);
                 });
             }.bind(this))
@@ -115,7 +119,8 @@ export default Ember.Mixin.create({
     unloadAll: function(typeKey) {
         if (!Ember.isNone(typeKey)) {
             var type = this.modelFor(typeKey);
-            this.typeMapFor(type).metadata.find_all_requested = null;
+            this.typeMapFor(type).metadata.find_all_requested = false;
+            this.typeMapFor(type).metadata.find_all_requested_at = null;
         }
         return this._super.apply(this, arguments);
     },
