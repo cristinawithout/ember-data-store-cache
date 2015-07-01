@@ -33,18 +33,18 @@ export default Ember.Mixin.create({
 
             // Get last queried time.
             var type = this.modelFor(typeKey);
-            var metadata = this.typeMapFor(type).metadata;
-            var requested = metadata.find_all_requested;
-            var requestedAt = metadata.find_all_requested_at;
+            var requested = this.typeMapFor(type).metadata.find_all_requested;
             var now = this._getTimeNow();
-
             cacheTime = cacheTime || this.get('cacheSeconds');
-            if (true !== requested && requestedAt && now - requestedAt < cacheTime) {
+
+            if (!Ember.isNone(requested) && requested.resolved !== true) {
+                // Request has not resolved yet. Return the pending promise.
+                return requested.promise;
+            } else if (!Ember.isNone(requested) && requested.timestamp && now - requested.timestamp < cacheTime) {
                 // If time is within cacheSeconds, get from store.
                 return this.all(typeKey);
             } else {
-                // Else, make request.
-                this.typeMapFor(type).metadata.find_all_requested = true;
+                // Hasn't been fetched yet or is out of date.
                 return this.findAll(typeKey, id);
             }
         }
@@ -80,32 +80,41 @@ export default Ember.Mixin.create({
      */
     clearCacheTime(typeKey) {
         var type = this.modelFor(typeKey);
-        this.typeMapFor(type).metadata.find_all_requested_at = null;
+        this.typeMapFor(type).metadata.find_all_requested = null;
     },
 
     /**
-     * Override fetchAll method of store to set the find_all_requested metadata
+     * Override findAll method of store to set the find_all_requested metadata
      * for use in determining the last request time in findWithCache
      *
-     * @method fetchAll
+     * @method findAll
      * @param {String} typeKey
      */
-    fetchAll: function(typeKey) {
+    findAll: function(typeKey) {
         var args = arguments;
         var type = this.modelFor(typeKey);
+        var metadata = this.typeMapFor(type).metadata;
+
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            this._super.apply(this, args)
+            var promise = this._super.apply(this, args)
             .then(function(result) {
                 Ember.run(this, function() {
-                    this.typeMapFor(type).metadata.find_all_requested = false;
-                    this.typeMapFor(type).metadata.find_all_requested_at = this._getTimeNow();
+                    metadata.find_all_requested.resolved = true;
+                    metadata.find_all_requested.timestamp = this._getTimeNow();
                     resolve(result);
                 });
             }.bind(this))
             .catch(function(result) {
                 Ember.run(this, function() {
+                    metadata.find_all_requested = null;
                     reject(result);
                 });
+            }.bind(this));
+
+            metadata.find_all_requested = Ember.Object.create({
+                resolved: false,
+                promise: promise,
+                timestamp: null
             });
         }.bind(this));
     },
@@ -119,8 +128,8 @@ export default Ember.Mixin.create({
     unloadAll: function(typeKey) {
         if (!Ember.isNone(typeKey)) {
             var type = this.modelFor(typeKey);
-            this.typeMapFor(type).metadata.find_all_requested = false;
-            this.typeMapFor(type).metadata.find_all_requested_at = null;
+            var metadata = this.typeMapFor(type).metadata;
+            metadata.find_all_requested = null;
         }
         return this._super.apply(this, arguments);
     },
