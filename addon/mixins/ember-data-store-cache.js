@@ -78,7 +78,7 @@ export default Ember.Mixin.create({
      * @method clearCacheTime
      * @param {String} typeKey Type of clear
      */
-    clearCacheTime(typeKey) {
+    clearCacheTime: function(typeKey) {
         var type = this.modelFor(typeKey);
         this.typeMapFor(type).metadata.find_all_requested = null;
     },
