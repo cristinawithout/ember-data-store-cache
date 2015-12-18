@@ -42,7 +42,7 @@ export default Ember.Mixin.create({
                 return requested.promise;
             } else if (!Ember.isNone(requested) && requested.timestamp && now - requested.timestamp < cacheTime) {
                 // If time is within cacheSeconds, get from store.
-                return this.all(typeKey);
+                return this.peekAll(typeKey);
             } else {
                 // Hasn't been fetched yet or is out of date.
                 return this.findAll(typeKey, id);
