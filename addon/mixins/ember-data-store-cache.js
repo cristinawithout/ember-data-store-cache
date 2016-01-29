@@ -99,8 +99,10 @@ export default Ember.Mixin.create({
             var promise = this._super.apply(this, args)
             .then(function(result) {
                 Ember.run(this, function() {
-                    metadata.find_all_requested.resolved = true;
-                    metadata.find_all_requested.timestamp = this._getTimeNow();
+                    if (metadata && typeof metadata === 'object' && metadata.find_all_requested) {
+                        metadata.find_all_requested.resolved = true;
+                        metadata.find_all_requested.timestamp = this._getTimeNow();
+                    }
                     resolve(result);
                 });
             }.bind(this))
